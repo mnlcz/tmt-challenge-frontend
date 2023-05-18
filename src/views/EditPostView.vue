@@ -1,17 +1,7 @@
 <template>
   <div class='container container-form'>
     <form @submit.prevent='postear'>
-      <h2 class='mb-3'>Nuevo post</h2>
-      <div class='input'>
-        <label for='title'>Titulo</label>
-        <input
-          v-model='titulo'
-          class='form-control'
-          type='text'
-          id='titulo'
-          placeholder='Acá va el título.'
-        />
-      </div>
+      <h2 class='mb-3'>Editar post</h2>
       <div class='input'>
         <label for='content'>Contenido</label>
         <textarea
@@ -46,31 +36,28 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie'
-import { post } from '@/services/api'
+import { patch } from '@/services/api'
 
 export default {
   data() {
     return {
-      titulo: '',
       contenido: '',
       errorMessage: ''
     }
   },
   methods: {
     postear() {
-      if (this.titulo !== '' && this.contenido !== '') {
+      if (this.contenido !== '') {
         this.errorMessage = ''
-        const user = Cookies.get('user')
-        if (!user) {
-          throw new Error('No estás logueado')
+        const id = this.$route.params.id
+        if (!id) {
+          throw new Error('Post invalido')
         } else {
           const data = {
-            title: this.titulo,
             content: this.contenido
           }
           try {
-            post(user, data)
+            patch(id, data)
             this.$router.push('/')
           } catch (err) {
             this.errorMessage = err.message

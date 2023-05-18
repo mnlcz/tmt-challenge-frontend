@@ -7,54 +7,49 @@
     <div>
       <strong>Email:</strong> <span>{{ email }}</span>
     </div>
-    <h3>Posts</h3>
-    <ul>
-      <li v-for='post in posts' :key='post.id'>
-        <h4>{{ post.title }}</h4>
-        <p>{{ post.content }}</p>
-        <button @click='editPost(post.id)'>Edit</button>
-      </li>
-    </ul>
+    <PostList></PostList>
   </div>
 </template>
 
 <script>
+import Cookies from 'js-cookie'
+import PostList from '@/components/PostList.vue'
+import { getUserInfo } from '@/services/api'
+
 export default {
+  components: {
+    PostList
+  },
   data() {
     return {
-      username: 'Change later',
-      email: 'Change later',
-      posts: [
-        {
-          id: '-1',
-          title: 'Hardcoded post title 1',
-          content: 'Bla bla bla bla content'
-        },
-        {
-          id: '-2',
-          title: 'Hardcoded post title 2',
-          content: 'Bla bla bla bla content'
-        },
-        {
-          id: '-3',
-          title: 'Hardcoded post title 3',
-          content: 'Bla bla bla bla content'
-        }
-      ]
+      username: '',
+      email: ''
     }
+  },
+  created() {
+    this.fetchUserInfo()
   },
   methods: {
-    editPost(postId) {
-      throw new Error(`TODO: ${postId}`)
+    async fetchUserInfo() {
+      try {
+        const urlParam = this.$route.params.user
+        if (urlParam === 'me') {
+          const cookie = Cookies.get('user')
+          if (cookie) {
+            const userInfo = await getUserInfo(cookie)
+            this.username = userInfo.username
+            this.email = userInfo.email
+          }
+        } else {
+          const userInfo = await getUserInfo(urlParam)
+          this.username = userInfo.username
+          this.email = userInfo.email
+        }
+      } catch (err) {
+        console.error('Error obtaining user information', err)
+        this.$router.push('/')
+      }
     }
-  },
-  mounted() {
-    // Assuming you have fetched the person's data from your API and stored it in a variable called 'person'
-    /*
-    this.username = person.username;
-    this.email = person.email;
-    this.posts = person.posts;
-     */
   }
 }
 </script>

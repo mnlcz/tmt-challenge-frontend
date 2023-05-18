@@ -1,5 +1,5 @@
 <template>
-  <nav-bar :logueado='logueado' @update:logueado='logueado = $event'></nav-bar>
+  <nav-bar></nav-bar>
   <router-view />
 </template>
 
@@ -8,11 +8,6 @@ import NavBar from '@/components/NavBar.vue'
 
 export default {
   components: { NavBar },
-  data() {
-    return {
-      logueado: true
-    }
-  }
 }
 </script>
 

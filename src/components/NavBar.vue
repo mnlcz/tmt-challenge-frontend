@@ -15,8 +15,8 @@
         </ul>
         <ul v-else class='navbar-nav me-auto mb-2'>
           <router-link to='/newpost' class='nav-link active' aria-current='page'>Nuevo Post</router-link>
-          <router-link to='/profile' class='nav-link active' aria-current='page'>Mi Perfil</router-link>
-          <router-link to='/' class='nav-link active' aria-current='page' @click='updateLogueado'>Cerrar Sesión
+          <router-link to='/profile/me' class='nav-link active' aria-current='page'>Mi Perfil</router-link>
+          <router-link to='/' class='nav-link active' aria-current='page' @click='logout'>Cerrar Sesión
           </router-link>
         </ul>
       </div>
@@ -25,11 +25,35 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
+
 export default {
-  props: ['logueado'],
+  data() {
+    return {
+      logueado: false,
+      user: null
+    }
+  },
+  created() {
+    this.checkLoginStatus()
+  },
   methods: {
-    updateLogueado() {
-      this.$emit('update:logueado', !this.logueado)
+    checkLoginStatus() {
+      const user = Cookies.get('user')
+      if (user) {
+        this.logueado = true
+        this.user = user
+      } else {
+        this.logueado = false
+        this.user = null
+      }
+    },
+    logout() {
+      Cookies.remove('user')
+      this.logueado = false
+      this.user = null
+      this.$router.push('/')
+      window.location.reload()
     }
   }
 }
